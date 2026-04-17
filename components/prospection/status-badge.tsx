@@ -9,23 +9,23 @@ const statusConfig: Record<
 > = {
   nouveau: {
     label: "Nouveau",
-    className: "bg-[#264DEB]/10 text-[#264DEB] border-[#264DEB]/20",
+    className: "bg-white/10 text-white border-white/20",
   },
   contacte: {
     label: "Contacté",
-    className: "bg-amber-500/10 text-amber-600 border-amber-500/20",
+    className: "bg-white/5 text-white/70 border-white/10",
   },
   interesse: {
     label: "Intéressé",
-    className: "bg-[#6C3AED]/10 text-[#6C3AED] border-[#6C3AED]/20",
+    className: "bg-white/20 text-white border-white/30 font-bold",
   },
   client: {
     label: "Client",
-    className: "bg-green-600/10 text-green-600 border-green-600/20",
+    className: "bg-green-500/10 text-green-400 border-green-500/20",
   },
   perdu: {
     label: "Perdu",
-    className: "bg-red-600/10 text-red-600 border-red-600/20",
+    className: "bg-red-500/10 text-red-400 border-red-500/20",
   },
 };
 

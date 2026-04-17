@@ -1,22 +1,18 @@
-import { Sidebar } from "@/components/layout/sidebar";
-import { Header } from "@/components/layout/header";
-import { RightPanel } from "@/components/layout/right-panel";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SidebarInset } from "@/components/ui/sidebar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
-      <Sidebar />
-      <div className="flex flex-col flex-1 min-w-0">
-        <Header />
-        <main className="flex-1 overflow-y-auto">
-          <div className="flex h-full">
-            <div className="flex-1 min-w-0 p-5">
-              {children}
-            </div>
-            <RightPanel />
+    <div className="flex h-screen bg-black overflow-hidden font-sans">
+      <AppSidebar />
+      <SidebarInset className="bg-black/50 overflow-hidden flex flex-col">
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto p-6 md:p-8">
+          <div className="mx-auto max-w-7xl">
+            {children}
           </div>
         </main>
-      </div>
+      </SidebarInset>
     </div>
   );
 }

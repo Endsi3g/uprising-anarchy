@@ -52,30 +52,28 @@ export default function ClientsPage() {
   const byColumn = (colId: ClientStatus) => clients.filter((c) => c.statut === colId);
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <h1 className="text-lg font-semibold">Clients</h1>
-          <p className="text-sm text-muted-foreground">Gérez votre pipeline CRM</p>
-        </div>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight text-white">Pipeline CRM</h1>
+        <p className="text-sm text-white/40 font-medium leading-relaxed">Gérez votre flux de trésorerie et le cycle de vie de vos contrats.</p>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="grid grid-cols-4 gap-4 h-full">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 h-full items-start">
           {COLUMNS.map((col) => {
             const cards = byColumn(col.id);
             const total = cards.reduce((sum, c) => sum + c.valeur, 0);
             return (
-              <div key={col.id} className="flex flex-col gap-2 min-h-0">
+              <div key={col.id} className="flex flex-col gap-4 min-h-0">
                 {/* Column header */}
-                <div className="flex items-center justify-between px-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold">{col.label}</span>
-                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-muted text-xs font-semibold text-muted-foreground">
+                <div className="flex items-center justify-between px-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">{col.label}</span>
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-white text-[10px] font-bold text-black translate-y-[-1px]">
                       {cards.length}
                     </span>
                   </div>
-                  <span className="text-xs text-muted-foreground">{formatCAD(total)}</span>
+                  <span className="text-[11px] font-bold text-white/50 tracking-tight">{formatCAD(total)}</span>
                 </div>
 
                 {/* Drop zone */}
@@ -85,8 +83,8 @@ export default function ClientsPage() {
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       className={cn(
-                        "flex flex-col gap-2 flex-1 min-h-[200px] rounded-xl p-2 transition-colors",
-                        snapshot.isDraggingOver ? "bg-muted/60" : "bg-muted/20"
+                        "flex flex-col gap-3 flex-1 min-h-[500px] border border-white/[0.04] rounded-2xl p-2 transition-all duration-300",
+                        snapshot.isDraggingOver ? "bg-white/[0.05] border-white/10" : "bg-white/[0.02]"
                       )}
                     >
                       {cards.map((card, index) => (
@@ -97,32 +95,33 @@ export default function ClientsPage() {
                               {...prov.draggableProps}
                               {...prov.dragHandleProps}
                               className={cn(
-                                "rounded-xl bg-card ring-1 ring-foreground/10 p-3 flex flex-col gap-1.5 cursor-grab select-none",
-                                snap.isDragging && "shadow-lg ring-[#264DEB]/30 rotate-1"
+                                "group rounded-xl bg-black border border-white/[0.06] p-4 flex flex-col gap-4 cursor-grab select-none transition-all duration-300 relative overflow-hidden",
+                                snap.isDragging ? "shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-white/20 -rotate-1 z-50 scale-105" : "hover:border-white/10 hover:bg-white/[0.02]"
                               )}
                             >
-                              <div className="flex items-start justify-between gap-1">
-                                <span className="text-sm font-medium leading-snug">{card.nom}</span>
+                              <div className="absolute top-0 left-0 w-1 h-full bg-white/10 group-hover:bg-white transition-colors" />
+                              <div className="flex items-start justify-between gap-1 pl-1">
+                                <span className="text-sm font-bold text-white/90 leading-tight group-hover:text-white transition-colors">{card.nom}</span>
                               </div>
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs font-semibold text-[#264DEB]">
-                                  {formatCAD(card.valeur)}
-                                </span>
-                                <Badge className={cn("border text-xs", col.color)}>
-                                  {col.label}
-                                </Badge>
+                              <div className="flex items-end justify-between pl-1">
+                                <div className="space-y-0.5">
+                                    <p className="text-[8px] font-bold text-white/20 uppercase tracking-widest leading-none">Valeur Estimée</p>
+                                    <span className="text-lg font-bold tracking-tighter text-white">
+                                    {formatCAD(card.valeur)}
+                                    </span>
+                                </div>
+                                <div className="text-[9px] font-bold text-white/30 font-mono">
+                                  {new Date(card.date).toLocaleDateString("fr-CA", { month: 'short', day: 'numeric' })}
+                                </div>
                               </div>
-                              <span className="text-xs text-muted-foreground">
-                                {new Date(card.date).toLocaleDateString("fr-CA")}
-                              </span>
                             </div>
                           )}
                         </Draggable>
                       ))}
                       {provided.placeholder}
                       {cards.length === 0 && (
-                        <div className="flex-1 flex items-center justify-center">
-                          <span className="text-xs text-muted-foreground">Glisser ici</span>
+                        <div className="flex-1 flex items-center justify-center opacity-20 group">
+                          <span className="text-[10px] font-bold uppercase tracking-[0.2em] transition-all">Vide</span>
                         </div>
                       )}
                     </div>

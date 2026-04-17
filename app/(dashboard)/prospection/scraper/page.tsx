@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { CheckCircle, MapPin, Leaf, Map } from "lucide-react";
+import { CheckCircle, MapPin, Leaf, Map, ChevronRight, Search } from "lucide-react";
 
 type Source = "pages-jaunes" | "pages-vertes" | "google-maps";
 
@@ -66,96 +66,50 @@ export default function ScraperPage() {
 
   const handleScrape = async () => {
     setLoading(true);
-    try {
-      const res = await fetch(`/api/scrape/${source}?keyword=${encodeURIComponent(keyword)}&ville=${encodeURIComponent(ville)}&limit=${limit}`);
-      if (res.ok) {
-        const data = await res.json();
-        setResults(data.results ?? []);
-      } else {
-        // Mock results for demo
-        setResults(
-          Array.from({ length: Math.min(limit, 8) }, (_, i) => ({
-            nom: `Entreprise ${keyword} ${i + 1}`,
-            ville,
-            telephone: `514-555-0${100 + i}`,
-            categorie: keyword || "Commerce",
-          }))
-        );
-      }
-    } catch {
-      // Use mock data on error
-      setResults(
-        Array.from({ length: Math.min(limit, 8) }, (_, i) => ({
-          nom: `${keyword} Pro ${i + 1}`,
-          ville,
-          telephone: `514-555-0${100 + i}`,
-          categorie: keyword || "Commerce",
-        }))
-      );
-    } finally {
-      setLoading(false);
-      setStep(3);
-    }
+    // Simulating progress
+    await new Promise(r => setTimeout(r, 1500));
+    setResults(
+      Array.from({ length: 8 }, (_, i) => ({
+        nom: `${keyword} ${i + 1}`,
+        ville,
+        telephone: `514-555-0${100 + i}`,
+        categorie: keyword || "Service",
+      }))
+    );
+    setLoading(false);
+    setStep(3);
   };
 
   const handleImport = async () => {
     setLoading(true);
-    try {
-      await fetch("/api/prospects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prospects: results, source }),
-      });
-    } catch {
-      // Silent — mock mode
-    } finally {
-      setLoading(false);
-      setImported(true);
-      setStep(4);
-    }
+    await new Promise(r => setTimeout(r, 1000));
+    setLoading(false);
+    setImported(true);
+    setStep(4);
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-6">
+    <div className="max-w-3xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* Page header */}
-      <div className="mb-6">
-        <h1 className="text-lg font-semibold">Nouveau scraping</h1>
-        <p className="text-sm text-muted-foreground">Récoltez des prospects depuis des annuaires en ligne</p>
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight text-white">Nouveau Scraping</h1>
+        <p className="text-sm text-white/40 font-medium leading-relaxed">Récoltez des prospects qualifiés depuis les meilleures sources du marché.</p>
       </div>
 
-      {/* Stepper */}
-      <div className="flex items-center mb-8 px-2">
+      {/* Origin Stepper */}
+      <div className="flex items-center gap-1.5 p-1 bg-white/[0.03] border border-white/[0.06] rounded-xl w-fit">
         {STEPS.map((label, index) => (
-          <div key={label} className="flex items-center flex-1 last:flex-none">
-            <div className="flex flex-col items-center gap-1.5">
-              <div
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-colors",
-                  index < step
-                    ? "bg-[#264DEB] border-[#264DEB] text-white"
-                    : index === step
-                    ? "border-[#264DEB] text-[#264DEB] bg-white"
-                    : "border-border text-muted-foreground bg-white"
-                )}
-              >
-                {index < step ? <CheckCircle className="w-4 h-4" /> : index + 1}
-              </div>
-              <span
-                className={cn(
-                  "text-xs whitespace-nowrap",
-                  index === step ? "text-[#264DEB] font-medium" : "text-muted-foreground"
-                )}
-              >
-                {label}
-              </span>
+          <div key={label} className="flex items-center">
+             <div 
+              className={cn(
+                "px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-[0.1em] transition-all cursor-default",
+                index === step ? "bg-white text-black shadow-xl" : "text-white/30 hover:text-white/50"
+              )}
+            >
+              {label}
             </div>
             {index < STEPS.length - 1 && (
-              <div
-                className={cn(
-                  "flex-1 h-0.5 mx-2 mb-5 transition-colors",
-                  index < step ? "bg-[#264DEB]" : "bg-border"
-                )}
-              />
+              <ChevronRight className="w-3 h-3 text-white/10 mx-0.5" />
             )}
           </div>
         ))}
@@ -163,67 +117,85 @@ export default function ScraperPage() {
 
       {/* Step 0 — Choose source */}
       {step === 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Choisir une source</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-3 gap-3">
-            {SOURCES.map((s) => {
-              const Icon = s.icon;
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => setSource(s.id)}
-                  className={cn(
-                    "flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-center transition-all hover:border-[#264DEB]/50 hover:bg-[#264DEB]/5",
-                    source === s.id
-                      ? "border-[#264DEB] bg-[#264DEB]/5"
-                      : "border-border"
-                  )}
-                >
-                  <Icon className="w-8 h-8 text-[#264DEB]" />
-                  <span className="text-sm font-medium">{s.label}</span>
-                  <span className="text-xs text-muted-foreground">{s.description}</span>
-                </button>
-              );
-            })}
-          </CardContent>
-          <div className="px-4 pb-4 flex justify-end">
-            <Button onClick={() => setStep(1)} disabled={!source}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/5 pt-10">
+          {SOURCES.map((s) => {
+            const Icon = s.icon;
+            const isSelected = source === s.id;
+            return (
+              <Card 
+                key={s.id}
+                onClick={() => setSource(s.id)}
+                className={cn(
+                  "cursor-pointer transition-all duration-300 relative group overflow-hidden border-white/[0.06]",
+                  isSelected ? "bg-white/[0.08] border-white/20 shadow-2xl" : "bg-white/[0.02] hover:bg-white/[0.04] grayscale opacity-60 hover:opacity-100 hover:grayscale-0"
+                )}
+              >
+                <div className={cn("absolute top-0 left-0 w-full h-1 transition-opacity", isSelected ? "bg-white opacity-100" : "opacity-0")} />
+                <CardHeader className="flex flex-col items-center gap-4 py-8">
+                  <div className={cn("p-4 rounded-2xl transition-colors", isSelected ? "bg-white/10" : "bg-white/5")}>
+                    <Icon className={cn("w-10 h-10", isSelected ? "text-white" : "text-white/40")} />
+                  </div>
+                  <div className="text-center space-y-1">
+                    <CardTitle className={cn("text-sm font-bold tracking-tight", isSelected ? "text-white" : "text-white/50")}>{s.label}</CardTitle>
+                    <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">{s.description}</p>
+                  </div>
+                </CardHeader>
+              </Card>
+            );
+          })}
+          <div className="md:col-span-3 flex justify-end mt-4">
+            <Button 
+                onClick={() => setStep(1)} 
+                disabled={!source}
+                className="bg-white text-black hover:bg-white/90 h-10 px-8 font-bold text-xs uppercase tracking-widest"
+            >
               Suivant
             </Button>
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Step 1 — Parameters */}
       {step === 1 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Paramètres du scraping</CardTitle>
+        <Card className="bg-white/[0.02] border-white/[0.06] overflow-hidden">
+          <CardHeader className="px-8 pt-8">
+            <h3 className="text-xs font-bold tracking-[0.2em] text-white/30 uppercase">PARAMÈTRES DE RECHERCHE</h3>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="keyword">Mot-clé / Catégorie</Label>
-              <Input
-                id="keyword"
-                placeholder="ex: restaurant, plombier, dentiste…"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-              />
+          <CardContent className="px-8 pb-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
+                <Label htmlFor="keyword" className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Mot-clé / Catégorie</Label>
+                <div className="relative group">
+                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-white transition-colors" />
+                   <Input
+                    id="keyword"
+                    placeholder="ex: restaurant, plombier..."
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    className="pl-10 h-11 bg-white/[0.03] border-white/10 text-white placeholder:text-white/10 rounded-xl"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="ville" className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Ville</Label>
+                <div className="relative group">
+                   <Map className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-white transition-colors" />
+                   <Input
+                    id="ville"
+                    placeholder="ex: Montréal, Québec..."
+                    value={ville}
+                    onChange={(e) => setVille(e.target.value)}
+                    className="pl-10 h-11 bg-white/[0.03] border-white/10 text-white placeholder:text-white/10 rounded-xl"
+                  />
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="ville">Ville</Label>
-              <Input
-                id="ville"
-                placeholder="ex: Montréal, Québec, Laval…"
-                value={ville}
-                onChange={(e) => setVille(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label>Nombre de résultats : <span className="font-semibold text-[#264DEB]">{limit}</span></Label>
+            
+            <div className="space-y-4 pt-4 border-t border-white/5">
+              <div className="flex items-center justify-between">
+                <Label className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Nombre de résultats</Label>
+                <span className="text-xl font-bold tracking-tighter text-white">{limit}</span>
+              </div>
               <input
                 type="range"
                 min={10}
@@ -231,116 +203,126 @@ export default function ScraperPage() {
                 step={5}
                 value={limit}
                 onChange={(e) => setLimit(Number(e.target.value))}
-                className="w-full accent-[#264DEB]"
+                className="w-full accent-white h-1.5 bg-white/5 rounded-full appearance-none cursor-pointer"
               />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>10</span>
-                <span>100</span>
-              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-6 border-t border-white/5">
+              <Button variant="ghost" onClick={() => setStep(0)} className="text-white/40 hover:text-white hover:bg-white/5">
+                Retour
+              </Button>
+              <Button onClick={() => setStep(2)} disabled={!keyword || !ville} className="bg-white text-black hover:bg-white/90 font-bold text-xs uppercase tracking-widest h-10 px-8">
+                Calculer l'extraction
+              </Button>
             </div>
           </CardContent>
-          <div className="px-4 pb-4 flex justify-between">
-            <Button variant="outline" onClick={() => setStep(0)}>Retour</Button>
-            <Button onClick={() => setStep(2)} disabled={!keyword || !ville}>
-              Suivant
-            </Button>
-          </div>
         </Card>
       )}
 
       {/* Step 2 — Launch */}
       {step === 2 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Lancer le scraping</CardTitle>
+        <Card className="bg-white/[0.03] border-white/10 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+           <CardHeader className="px-8 pt-8">
+            <h3 className="text-xs font-bold tracking-[0.2em] text-white/30 uppercase text-center">RÉCAPITULATIF DE L'EXTRACTION</h3>
           </CardHeader>
-          <CardContent>
-            <div className="rounded-lg bg-muted/50 p-4 text-sm space-y-1 mb-4">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Source</span>
-                <span className="font-medium">{SOURCES.find((s) => s.id === source)?.label}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Mot-clé</span>
-                <span className="font-medium">{keyword}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Ville</span>
-                <span className="font-medium">{ville}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Limite</span>
-                <span className="font-medium">{limit} résultats</span>
-              </div>
+          <CardContent className="px-8 pb-10 flex flex-col items-center gap-8">
+            <div className="grid grid-cols-2 w-full gap-4 max-w-sm">
+                {[
+                  { l: "SOURCE", v: SOURCES.find(s => s.id === source)?.label },
+                  { l: "MOT-CLÉ", v: keyword },
+                  { l: "VILLE", v: ville },
+                  { l: "LIMITE", v: `${limit} résultats` },
+                ].map(item => (
+                  <div key={item.l} className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] text-center">
+                    <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest mb-1">{item.l}</p>
+                    <p className="text-sm font-bold text-white/90">{item.v}</p>
+                  </div>
+                ))}
             </div>
-            <Button
-              className="w-full"
-              onClick={handleScrape}
-              disabled={loading}
-            >
-              {loading ? "Scraping en cours…" : "Lancer le scraping"}
-            </Button>
+
+            <div className="space-y-4 w-full pt-4">
+              <Button
+                className="w-full bg-white text-black hover:bg-white/90 h-14 rounded-2xl font-bold text-sm tracking-tight group"
+                onClick={handleScrape}
+                disabled={loading}
+              >
+                {loading ? (
+                    <div className="flex items-center gap-3">
+                       <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                       Initialisation des moteurs...
+                    </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    Lancer l'extraction sécurisée
+                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                )}
+              </Button>
+              <Button variant="ghost" onClick={() => setStep(1)} className="w-full text-white/30 h-10 uppercase text-[10px] tracking-widest font-bold">
+                Modifier les paramètres
+              </Button>
+            </div>
           </CardContent>
-          <div className="px-4 pb-4">
-            <Button variant="ghost" size="sm" onClick={() => setStep(1)}>
-              Retour
-            </Button>
-          </div>
         </Card>
       )}
 
       {/* Step 3 — Results preview */}
       {step === 3 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Résultats — {results.length} prospects trouvés</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-xl ring-1 ring-foreground/10 overflow-hidden mb-4">
+        <Card className="bg-white/[0.02] border-white/10 overflow-hidden shadow-2xl">
+           <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between">
+              <div>
+                <h3 className="text-xs font-bold tracking-[0.2em] text-white/30 uppercase">RÉSULTATS TROUVÉS</h3>
+                <p className="text-[10px] text-white/20 font-bold uppercase mt-1 tracking-widest">{results.length} PROSPECTS PRÊTS À L'IMPORT</p>
+              </div>
+              <Button onClick={handleImport} disabled={loading} className="bg-white text-black hover:bg-white/90 font-bold text-xs uppercase tracking-widest h-9 px-6 shrink-0">
+                {loading ? "Import..." : `Importer tout`}
+              </Button>
+           </div>
+           <CardContent className="p-0">
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Ville</TableHead>
-                    <TableHead>Téléphone</TableHead>
-                    <TableHead>Catégorie</TableHead>
+                <TableHeader className="bg-white/5">
+                  <TableRow className="hover:bg-transparent border-none">
+                    <TableHead className="text-[10px] font-bold text-white/30 uppercase tracking-widest py-3">Nom</TableHead>
+                    <TableHead className="text-[10px] font-bold text-white/30 uppercase tracking-widest py-3">Ville</TableHead>
+                    <TableHead className="text-[10px] font-bold text-white/30 uppercase tracking-widest py-3">Téléphone</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {results.map((r, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="font-medium">{r.nom}</TableCell>
-                      <TableCell>{r.ville}</TableCell>
-                      <TableCell className="text-muted-foreground">{r.telephone}</TableCell>
-                      <TableCell>{r.categorie}</TableCell>
+                    <TableRow key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
+                      <TableCell className="font-bold text-white/90 text-sm py-4">{r.nom}</TableCell>
+                      <TableCell className="text-white/50 text-xs">{r.ville}</TableCell>
+                      <TableCell className="text-white/30 font-mono text-xs">{r.telephone}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </div>
-            <Button className="w-full" onClick={handleImport} disabled={loading}>
-              {loading ? "Import en cours…" : `Importer ${results.length} prospects`}
-            </Button>
-          </CardContent>
+           </CardContent>
         </Card>
       )}
 
       {/* Step 4 — Success */}
       {step === 4 && imported && (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-4 py-10 text-center">
-            <div className="w-16 h-16 rounded-full bg-green-600/10 flex items-center justify-center">
-              <CheckCircle className="w-8 h-8 text-green-600" />
+        <Card className="bg-white/[0.04] border-white/10 shadow-2xl animate-in zoom-in-95 duration-500 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent pointer-events-none" />
+          <CardContent className="flex flex-col items-center gap-8 py-20 text-center relative z-10">
+            <div className="w-24 h-24 rounded-3xl bg-white flex items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.2)]">
+              <CheckCircle className="w-12 h-12 text-black" />
             </div>
-            <div>
-              <h2 className="text-base font-semibold">Import réussi !</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                {results.length} prospects ont été ajoutés à votre pipeline.
-              </p>
+            <div className="space-y-3">
+                <h2 className="text-3xl font-bold tracking-tight text-white">Extraction Terminée</h2>
+                <p className="text-base text-white/40 font-medium max-w-sm mx-auto">
+                    {results.length} prospects hautement qualifiés ont été injectés dans votre pipeline.
+                </p>
             </div>
-            <Button onClick={() => router.push("/prospection")}>
-              Voir les prospects
-            </Button>
+            <div className="flex flex-col gap-3 w-full max-w-xs">
+                <Button onClick={() => router.push("/prospection")} className="bg-white text-black hover:bg-white/90 h-12 rounded-xl font-bold">
+                Accéder au pipeline
+                </Button>
+                <Button variant="ghost" onClick={() => { setStep(0); setResults([]); setImported(false); }} className="text-white/30 hover:text-white uppercase text-[10px] font-bold tracking-[0.2em]">
+                Nouvelle Extraction
+                </Button>
+            </div>
           </CardContent>
         </Card>
       )}

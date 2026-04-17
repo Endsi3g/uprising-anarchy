@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import {
   Table,
@@ -27,7 +28,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { StatusBadge, type ProspectStatus } from "./status-badge";
-import { ScanSearch, Eye } from "lucide-react";
+import { ScanSearch, Eye, Search } from "lucide-react";
 
 export interface Prospect {
   id: string;
@@ -134,103 +135,102 @@ export function ProspectTable({ prospects = MOCK_PROSPECTS }: { prospects?: Pros
   return (
     <>
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <Input
-          placeholder="Rechercher un prospect…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-xs"
-        />
+      <div className="flex flex-wrap items-center gap-3 mb-6 px-4">
+        <div className="relative group flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30 group-focus-within:text-white transition-colors" />
+          <Input
+            placeholder="Rechercher un prospect…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 bg-white/[0.03] border-white/10 text-white placeholder:text-white/20 h-9 rounded-lg focus-visible:ring-1 focus-visible:ring-white/20"
+          />
+        </div>
         <Select value={statutFilter} onValueChange={(v) => { if (v) setStatutFilter(v); }}>
-          <SelectTrigger size="default" className="w-36">
+          <SelectTrigger className="w-36 bg-white/[0.03] border-white/10 text-white/70 h-9 rounded-lg">
             <SelectValue placeholder="Statut" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-black border-white/10">
             {STATUT_OPTIONS.map((s) => (
-              <SelectItem key={s} value={s}>
+              <SelectItem key={s} value={s} className="text-white/70 focus:bg-white/10 focus:text-white">
                 {s.charAt(0).toUpperCase() + s.slice(1)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Select value={sourceFilter} onValueChange={(v) => { if (v) setSourceFilter(v); }}>
-          <SelectTrigger size="default" className="w-40">
+          <SelectTrigger className="w-40 bg-white/[0.03] border-white/10 text-white/70 h-9 rounded-lg">
             <SelectValue placeholder="Source" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-black border-white/10">
             {SOURCE_OPTIONS.map((s) => (
-              <SelectItem key={s} value={s}>
+              <SelectItem key={s} value={s} className="text-white/70 focus:bg-white/10 focus:text-white">
                 {s}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <div className="ml-auto">
-          <Link href="/prospection/scraper">
-            <Button>
-              <ScanSearch className="mr-1.5 w-4 h-4" />
-              Nouveau scraping
-            </Button>
-          </Link>
-        </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-xl ring-1 ring-foreground/10 overflow-hidden bg-card">
+      <div className="overflow-hidden">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nom</TableHead>
-              <TableHead>Ville</TableHead>
-              <TableHead>Catégorie</TableHead>
-              <TableHead>Source</TableHead>
-              <TableHead>Statut</TableHead>
-              <TableHead>Score</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+          <TableHeader className="bg-white/[0.02] border-y border-white/[0.05]">
+            <TableRow className="hover:bg-transparent border-none">
+              <TableHead className="text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] h-10">Nom</TableHead>
+              <TableHead className="text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] h-10">Ville</TableHead>
+              <TableHead className="text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] h-10">Catégorie</TableHead>
+              <TableHead className="text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] h-10">Source</TableHead>
+              <TableHead className="text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] h-10">Statut</TableHead>
+              <TableHead className="text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] h-10">Score</TableHead>
+              <TableHead className="text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] h-10">Date</TableHead>
+              <TableHead className="text-right text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] h-10">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={8} className="text-center text-white/20 py-12 text-xs font-medium uppercase tracking-widest">
                   Aucun prospect trouvé.
                 </TableCell>
               </TableRow>
             ) : (
               filtered.map((prospect) => (
-                <TableRow key={prospect.id}>
-                  <TableCell className="font-medium">{prospect.nom}</TableCell>
-                  <TableCell>{prospect.ville}</TableCell>
-                  <TableCell>{prospect.categorie}</TableCell>
-                  <TableCell className="text-muted-foreground">{prospect.source}</TableCell>
+                <TableRow key={prospect.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors group cursor-pointer" onClick={() => setSelectedProspect(prospect)}>
+                  <TableCell className="font-semibold text-white/90 text-sm py-4">{prospect.nom}</TableCell>
+                  <TableCell className="text-white/50 text-xs">{prospect.ville}</TableCell>
+                  <TableCell className="text-white/50 text-xs">{prospect.categorie}</TableCell>
+                  <TableCell className="text-white/30 text-[11px] font-medium">{prospect.source}</TableCell>
                   <TableCell>
-                    <StatusBadge status={prospect.statut} />
+                    <StatusBadge status={prospect.statut} className="text-[10px] h-5 px-1.5" />
                   </TableCell>
                   <TableCell>
-                    <span
-                      className={
-                        prospect.score >= 80
-                          ? "text-green-600 font-semibold"
-                          : prospect.score >= 60
-                          ? "text-amber-600 font-semibold"
-                          : "text-red-600 font-semibold"
-                      }
-                    >
-                      {prospect.score}
-                    </span>
+                    <div className="flex items-center gap-2">
+                       <div className="w-12 h-1 bg-white/5 rounded-full overflow-hidden">
+                          <div 
+                            className={cn(
+                              "h-full rounded-full transition-all duration-1000",
+                              prospect.score >= 80 ? "bg-white" : prospect.score >= 60 ? "bg-white/60" : "bg-white/20"
+                            )}
+                            style={{ width: `${prospect.score}%` }}
+                          />
+                       </div>
+                       <span className="text-[11px] font-bold text-white/60">{prospect.score}</span>
+                    </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {new Date(prospect.date).toLocaleDateString("fr-CA")}
+                  <TableCell className="text-white/30 text-[11px] font-medium">
+                    {new Date(prospect.date).toLocaleDateString("fr-CA", { month: 'short', day: 'numeric', year: 'numeric' })}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
-                      size="icon-sm"
-                      onClick={() => setSelectedProspect(prospect)}
-                      title="Voir détail"
+                      size="icon"
+                      className="h-8 w-8 text-white/20 group-hover:text-white transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedProspect(prospect);
+                      }}
                     >
-                      <Eye />
+                      <Eye className="w-4 h-4" />
                     </Button>
                   </TableCell>
                 </TableRow>

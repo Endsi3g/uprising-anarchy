@@ -159,7 +159,7 @@ const useInternalRipple = ({ disabled = false, variant = "item" }: { disabled?: 
   };
 };
 
-const RippleLayer = ({ pressed, rippleRef, variant = "item" }: { pressed: boolean; rippleRef: React.RefObject<HTMLDivElement>; variant?: RippleVariant }) => (
+const RippleLayer = ({ pressed, rippleRef, variant = "item" }: { pressed: boolean; rippleRef: React.RefObject<HTMLDivElement | null>; variant?: RippleVariant }) => (
   <div className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none z-0">
     <div className="absolute inset-0 bg-current opacity-0 transition-opacity duration-200 group-hover:opacity-[0.08] group-data-[highlighted]:opacity-[0.08]" />
     <div

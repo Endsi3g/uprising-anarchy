@@ -111,143 +111,151 @@ export default function CampagnesPage() {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <h1 className="text-lg font-semibold">Campagnes</h1>
-          <p className="text-sm text-muted-foreground">Gérez vos campagnes outreach</p>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight text-white">Campagnes Outreach</h1>
+          <p className="text-sm text-white/40 font-medium leading-relaxed">Automatisez votre prospection à grande échelle avec des séquences IA.</p>
         </div>
-        <Button onClick={() => setDialogOpen(true)}>
-          <Plus className="mr-1.5" />
+        <Button onClick={() => setDialogOpen(true)} className="bg-white text-black hover:bg-white/90 h-10 px-6 font-bold text-xs uppercase tracking-widest shrink-0 shadow-2xl">
+          <Plus className="mr-2 w-4 h-4" />
           Nouvelle campagne
         </Button>
       </div>
 
       {/* Stats summary */}
-      <div className="grid grid-cols-3 gap-3 mb-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
           {
-            label: "Campagnes actives",
+            label: "CAMPAGNES ACTIVES",
             value: campagnes.filter((c) => c.statut === "active").length,
             icon: Send,
-            color: "text-[#264DEB]",
           },
           {
-            label: "Total prospects ciblés",
-            value: campagnes.reduce((s, c) => s + c.nbProspects, 0),
+            label: "PROSPECTS CIBLÉS",
+            value: campagnes.reduce((s, c) => s + c.nbProspects, 0).toLocaleString(),
             icon: TrendingUp,
-            color: "text-[#6C3AED]",
           },
           {
-            label: "Taux moyen réponse",
+            label: "TAUX DE RÉPONSE MOYEN",
             value: (() => {
               const totalEnv = campagnes.reduce((s, c) => s + c.envoyes, 0);
               const totalRep = campagnes.reduce((s, c) => s + c.repondus, 0);
-              return totalEnv === 0 ? "—" : `${Math.round((totalRep / totalEnv) * 100)} %`;
+              return totalEnv === 0 ? "—" : `${Math.round((totalRep / totalEnv) * 100)}%`;
             })(),
             icon: TrendingUp,
-            color: "text-green-600",
           },
         ].map((stat) => (
           <div
             key={stat.label}
-            className="rounded-xl bg-card ring-1 ring-foreground/10 p-4 flex items-center gap-3"
+            className="rounded-2xl bg-white/[0.02] border border-white/[0.06] p-6 flex flex-col gap-4 relative overflow-hidden group hover:border-white/10 transition-colors"
           >
-            <div className={cn("w-9 h-9 rounded-lg bg-muted/50 flex items-center justify-center", stat.color)}>
-              <stat.icon className="w-4 h-4" />
+            <div className="flex items-center justify-between relative z-10">
+                <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">{stat.label}</p>
+                <stat.icon className="w-4 h-4 text-white/10" />
             </div>
-            <div>
-              <div className="text-lg font-semibold leading-none">{stat.value}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">{stat.label}</div>
-            </div>
+            <div className="text-4xl font-bold tracking-tighter text-white tabular-nums relative z-10">{stat.value}</div>
+            <div className="absolute bottom-0 right-0 w-24 h-24 bg-white/[0.01] rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
           </div>
         ))}
       </div>
 
       {/* Campagne list */}
-      <div className="flex flex-col gap-3">
-        {campagnes.map((camp) => {
-          const statusConf = STATUS_CONFIG[camp.statut];
-          return (
-            <div
-              key={camp.id}
-              className="rounded-xl bg-card ring-1 ring-foreground/10 p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm font-semibold">{camp.nom}</span>
-                  <Badge className={cn("border", statusConf.className)}>{statusConf.label}</Badge>
-                </div>
-                {camp.description && (
-                  <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-sm">
-                    {camp.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-                  <span>Débute {new Date(camp.dateDebut).toLocaleDateString("fr-CA")}</span>
-                  {camp.dateFin && <span>→ {new Date(camp.dateFin).toLocaleDateString("fr-CA")}</span>}
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="flex items-center gap-4 shrink-0">
-                <div className="text-center">
-                  <div className="text-sm font-semibold">{camp.nbProspects}</div>
-                  <div className="text-xs text-muted-foreground">Prospects</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-sm font-semibold">{camp.envoyes}</div>
-                  <div className="text-xs text-muted-foreground">Envoyés</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-sm font-semibold">{camp.repondus}</div>
-                  <div className="text-xs text-muted-foreground">Réponses</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-[#264DEB]">
-                    {tauxReponse(camp.envoyes, camp.repondus)}
+      <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
+         <div className="px-6 py-4 border-b border-white/[0.05] bg-white/[0.02]">
+            <h3 className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">LISTE DES CAMPAGNES</h3>
+         </div>
+         <div className="flex flex-col">
+            {campagnes.map((camp, idx) => {
+              const statusConf = STATUS_CONFIG[camp.statut];
+              const responseRate = tauxReponse(camp.envoyes, camp.repondus);
+              return (
+                <div
+                  key={camp.id}
+                  className={cn(
+                    "p-6 flex flex-col gap-6 lg:flex-row lg:items-center transition-all duration-300 group hover:bg-white/[0.02]",
+                    idx !== campagnes.length - 1 && "border-b border-white/[0.03]"
+                  )}
+                >
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <h4 className="text-base font-bold text-white leading-none tracking-tight">{camp.nom}</h4>
+                      <div className={cn("px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border", statusConf.className.replace('bg-[#264DEB]/10 text-[#264DEB] border-[#264DEB]/20', 'bg-white/10 text-white border-white/20 bg-muted text-muted-foreground border-border bg-amber-500/10 text-amber-500 border-amber-500/20 bg-green-500/10 text-green-500 border-green-500/20').replace('bg-muted text-muted-foreground border-border', 'bg-white/5 text-white/30 border-white/10'))}>
+                        {statusConf.label}
+                      </div>
+                    </div>
+                    {camp.description && (
+                      <p className="text-sm text-white/40 font-medium leading-relaxed max-w-xl">
+                        {camp.description}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                       <span>START — {new Date(camp.dateDebut).toLocaleDateString("fr-CA")}</span>
+                       {camp.dateFin && <span>END — {new Date(camp.dateFin).toLocaleDateString("fr-CA")}</span>}
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground">Taux</div>
+
+                  {/* Performance Metrics */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12 shrink-0">
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Prospects</p>
+                      <p className="text-xl font-bold tracking-tight text-white/90 tabular-nums">{camp.nbProspects}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Envoyés</p>
+                      <p className="text-xl font-bold tracking-tight text-white/90 tabular-nums">{camp.envoyes}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Réponses</p>
+                      <p className="text-xl font-bold tracking-tight text-white/90 tabular-nums">{camp.repondus}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Taux</p>
+                      <p className="text-xl font-extrabold tracking-tighter text-white tabular-nums">{responseRate}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
+         </div>
       </div>
 
       {/* Create dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Nouvelle campagne</DialogTitle>
+        <DialogContent className="bg-[#0A0A0A] border-white/10 shadow-2xl max-w-lg p-0 overflow-hidden">
+          <DialogHeader className="p-8 pb-0">
+            <DialogTitle className="text-2xl font-bold tracking-tight text-white">Initialiser une Campagne</DialogTitle>
+             <p className="text-sm text-white/40 mt-1">Configurez les bases de votre nouvelle séquence automatisée.</p>
           </DialogHeader>
-          <div className="flex flex-col gap-4 py-2">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="camp-nom">Nom de la campagne</Label>
+          <div className="px-8 py-8 space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="camp-nom" className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">NOM DE LA CAMPAGNE</Label>
               <Input
                 id="camp-nom"
                 placeholder="ex: Restaurants Montréal — Été 2026"
                 value={nom}
                 onChange={(e) => setNom(e.target.value)}
+                className="bg-white/[0.02] border-white/10 h-12 text-white placeholder:text-white/10 rounded-xl focus-visible:ring-1 focus-visible:ring-white/20"
               />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="camp-desc">Description</Label>
+            <div className="space-y-2">
+              <Label htmlFor="camp-desc" className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">CIBLE & OBJECTIFS</Label>
               <Textarea
                 id="camp-desc"
-                placeholder="Décrivez la cible et l'objectif de la campagne…"
+                placeholder="Décrivez précisément votre audience..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                rows={3}
+                rows={4}
+                className="bg-white/[0.02] border-white/10 text-white placeholder:text-white/10 rounded-xl focus-visible:ring-1 focus-visible:ring-white/20"
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+          <DialogFooter className="p-8 bg-white/[0.02] border-t border-white/[0.05]">
+            <Button variant="ghost" onClick={() => setDialogOpen(false)} className="text-white/30 hover:text-white uppercase text-[10px] font-bold tracking-widest">
               Annuler
             </Button>
-            <Button onClick={handleCreate} disabled={!nom.trim()}>
-              Créer
+            <Button onClick={handleCreate} disabled={!nom.trim()} className="bg-white text-black hover:bg-white/90 font-bold h-12 px-10 rounded-xl shrink-0">
+              Lancer le setup
             </Button>
           </DialogFooter>
         </DialogContent>
