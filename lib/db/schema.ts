@@ -56,8 +56,27 @@ export const campagneContacts = pgTable("campagne_contacts", {
   statut: text("statut").default("en_cours"), // en_cours | repondu | desabonne
 });
 
+export const profiles = pgTable("profiles", {
+  id: uuid("id").primaryKey(), // References auth.users id
+  fullName: text("full_name"),
+  companyName: text("company_name"),
+  companyWebsite: text("company_website"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const subscribers = pgTable("subscribers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export type Prospect = typeof prospects.$inferSelect;
 export type NewProspect = typeof prospects.$inferInsert;
 export type Territoire = typeof territoires.$inferSelect;
 export type Client = typeof clients.$inferSelect;
 export type Campagne = typeof campagnes.$inferSelect;
+export type Profile = typeof profiles.$inferSelect;
+export type NewProfile = typeof profiles.$inferInsert;
+export type Subscriber = typeof subscribers.$inferSelect;
+export type NewSubscriber = typeof subscribers.$inferInsert;

@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const stats = [
-  { label: "Total Prospects", value: "0", change: "+0 ce mois", icon: Users, color: "text-primary" },
+  { label: "Prospects Totaux", value: "0", change: "+0 ce mois", icon: Users, color: "text-primary" },
   { label: "Contactés", value: "0", change: "+0 cette semaine", icon: TrendingUp, color: "text-secondary" },
   { label: "Clients actifs", value: "0", change: "0 en cours", icon: UserCheck, color: "text-green-600" },
-  { label: "Pipeline", value: "0 $", change: "0 devis", icon: DollarSign, color: "text-orange-500" },
+  { label: "Pipeline (CA)", value: "0 $", change: "0 devis", icon: DollarSign, color: "text-orange-500" },
 ];
 
 export default function DashboardPage() {
